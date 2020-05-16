@@ -21,7 +21,7 @@ yarn-error.log*
 *.sw?
 
 # Old stuff
-/old/
+src/old
 
 # Python env stuff
 server/env
