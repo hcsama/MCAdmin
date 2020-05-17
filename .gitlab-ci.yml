@@ -1,4 +1,4 @@
-image: docker:19.03.8-dind
+#image: docker:19.03.8-dind
 
 before_script:
   - docker info
