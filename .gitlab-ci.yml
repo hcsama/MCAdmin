@@ -1,2 +1,6 @@
 before_script:
   - docker info
+
+build_image:
+  script:
+    - echo "this is a test"
