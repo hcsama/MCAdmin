@@ -1,10 +1,10 @@
 FROM python:3-alpine
 WORKDIR /usr/src/app
-COPY ../server ./
+COPY ./ ./
 RUN pip install Flask Flask-Cors mcrcon
-RUN mkdir web
-COPY ../src web
+RUN apk add --update npm
 RUN npm install
+# RUN npm run-script build
+EXPOSE 8080
 EXPOSE 5000
-COPY ./start.sh .
-CMD ["/bin/sh", "start.sh"]
+CMD ["/bin/sh", "/usr/src/app/image/start.sh"]

@@ -1,4 +1,4 @@
 #!/bin/sh
 #
-python server.py &
-cd web && npm run serve
+python server/server.py &
+npm run serve
