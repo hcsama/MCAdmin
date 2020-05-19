@@ -9,5 +9,4 @@ services:
 
 build_image:
   script:
-    - pwd
-    - ls
+    - docker build -t mcadmin -f image/Dockerfile .
