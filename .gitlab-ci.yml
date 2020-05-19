@@ -2,14 +2,12 @@ image: docker:19.03.8
 
 variables:
   DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_DRIVER: overlay2
 
 services:
   - docker:19.03.8-dind
 
-
-before_script:
-  - docker info
-
 build_image:
   script:
-    - echo "this is a test"
+    - pwd
+    - ls
