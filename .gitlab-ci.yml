@@ -10,3 +10,5 @@ services:
 build_image:
   script:
     - docker build -t mcadmin -f image/Dockerfile .
+    - docker tag mcadmin localhost:5000/mcadmin
+    - docker push mcadmin
