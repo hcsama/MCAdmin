@@ -12,5 +12,5 @@ build_image:
     - docker
   script:
     - docker build -t mcadmin -f image/Dockerfile .
-    - docker tag mcadmin registry:5000/mcadmin
-    - docker push registry:5000/mcadmin
+    - docker tag mcadmin 192.168.1.49:5000/mcadmin
+    - docker push 192.168.1.49:5000/mcadmin
