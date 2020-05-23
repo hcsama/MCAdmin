@@ -81,7 +81,18 @@ export default {
       axios.get(path).then((res) => { this.processserverresult(res); }).catch(e => {});
     },
     processserverresult(res) {
+      const before = this.validconnectionparms;
       this.validconnectionparms = res.data.connected;
+      if(before != this.validconnectionparms) {
+        if(before) {
+          clearInterval(this.clockTimer);
+          clearInterval(this.playerTimer);
+        }
+        if(this.validconnectionparms) {
+          this.clockTimer = setInterval(this.updateTime, 1000);
+          this.playerTimer = setInterval(this.updatePlayerlist, 10000);
+        }
+      }
     },
     updatePlayerlist() {
       const path = mcServer.concat('players');
@@ -93,8 +104,6 @@ export default {
   },
   mounted() {
     this.setserverparms();
-    this.clockTimer = setInterval(this.updateTime, 1000);
-    this.playerTimer = setInterval(this.updatePlayerlist, 10000);
   },
   beforeDestroy() {
     clearInterval(this.clockTimer);
