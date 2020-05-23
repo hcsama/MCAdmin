@@ -17,5 +17,5 @@ build_image:
 #    - docker pull $MY_IMAGE
 #    - docker build --cache-from $MY_IMAGE -t mcadmin -t $MY_IMAGE -f image/Dockerfile .
 #    - docker push $MY_IMAGE
-     - docker build --cache-from 192.168.1.49:5000/mcadmin -t mcadmin -t 192.168.1.49:5000/mcadmin -f image/Dockerfile .
-     - docker push 192.168.1.49:5000/mcadmin
+    - docker build --cache-from 192.168.1.49:5000/mcadmin -t mcadmin -t 192.168.1.49:5000/mcadmin -f image/Dockerfile .
+    - docker push 192.168.1.49:5000/mcadmin
