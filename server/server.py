@@ -18,7 +18,7 @@ app.config.from_object(__name__)
 CORS(app, resources={r'/*': {'origins': '*'}})
 
 log = logging.getLogger('werkzeug')
-#log.setLevel(logging.ERROR)
+log.setLevel(logging.ERROR)
 rconlock = threading.Lock()
 
 def rconRequest(req):
@@ -34,7 +34,7 @@ def rconRequest(req):
             return('-1')
         return(resp)
 
-@app.route('/connect', methods=['GET'])
+@app.route('/api/connect', methods=['GET'])
 def setConnectionParms():
     global serverip
     global serversecret
@@ -43,18 +43,18 @@ def setConnectionParms():
     check = rconRequest('time query daytime')
     return(jsonify(serverip=serverip, serversecret=serversecret, connected=(check != '-1')))
 
-@app.route('/time', methods=['GET'])
+@app.route('/api/time', methods=['GET'])
 def mctime():
     resp = rconRequest("time query daytime")
     return(jsonify(daytime=int(resp.split(' ')[-1])))
 
-@app.route('/motd', methods=['POST'])
+@app.route('/api/motd', methods=['POST'])
 def motd():
     if request.content_length > 0 and request.content_length < 100:
         rconRequest('say ' + request.get_data(as_text=True))
     return '{}'
 
-@app.route('/players', methods=['GET'])
+@app.route('/api/players', methods=['GET'])
 def players():
     resp = rconRequest("list uuids")
     pls = []
@@ -71,4 +71,4 @@ def players():
     return(jsonify(nplayers=nPlayers, maxplayers=maxPlayers, players=pls))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001)
+    app.run()
