@@ -2,15 +2,16 @@ image: docker:19.03.8
 
 variables:
   DOCKER_DRIVER: overlay2
+  MY_IMAGE: $MY_REGISTRY/mcadmin
 
 services:
   - name: docker:19.03.8-dind
-    command: ["--insecure-registry=192.168.1.49:5000"]
+    command: ["--insecure-registry=$MY_REGISTRY"]
 
 build_image:
   tags:
     - docker
   script:
-    - docker build -t mcadmin -f image/Dockerfile .
-    - docker tag mcadmin 192.168.1.49:5000/mcadmin
-    - docker push 192.168.1.49:5000/mcadmin
+    - docker pull $MY_IMAGE || true
+    - docker build --cache-from $MY_IMAGE -t mcadmin -t $MY_IMAGE -f image/Dockerfile .
+    - docker push $MY_IMAGE
