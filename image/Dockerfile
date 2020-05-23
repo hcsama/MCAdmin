@@ -1,10 +1,21 @@
-FROM python:3-alpine
-WORKDIR /usr/src/app
+FROM node:alpine as build-stage
+WORKDIR /app
 COPY ./ ./
-RUN pip install Flask Flask-Cors mcrcon
-RUN apk add --update npm
 RUN npm install
-# RUN npm run-script build
-EXPOSE 8080
-EXPOSE 5000
-CMD ["/bin/sh", "/usr/src/app/image/start.sh"]
+RUN npm run build
+
+FROM nginx:alpine
+WORKDIR /app/dist
+COPY --from=build-stage /app/dist ./
+WORKDIR /app/server
+COPY server/*.py ./
+RUN apk update
+RUN apk add python3
+RUN apk add py3-pip
+RUN pip3 install --no-cache-dir Flask Flask-Cors mcrcon
+WORKDIR /app
+COPY image/start.sh ./
+COPY nginx.conf /etc/nginx
+EXPOSE 80
+EXPOSE 5001
+CMD ["/bin/sh", "/app/start.sh"]

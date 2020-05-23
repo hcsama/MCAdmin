@@ -1,4 +1,4 @@
 #!/bin/sh
 #
-python server/server.py &
-npm run serve
+python3 server/server.py &
+nginx -g "daemon off;"
