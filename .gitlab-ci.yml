@@ -4,7 +4,7 @@ variables:
   DOCKER_DRIVER: overlay2
 
 services:
-  - docker:19.03.8-dind
+  - name: docker:19.03.8-dind
     command: ["--insecure-registry=192.168.1.49"]
 
 build_image:
