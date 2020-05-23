@@ -70,7 +70,7 @@ export default {
   },
   methods: {
     invalidateconnection() {
-      processserverresult(false);
+      this.processserverresult(false);
     },
     updateTime() {
       const path = mcServer.concat('time');
