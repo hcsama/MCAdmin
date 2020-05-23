@@ -8,6 +8,8 @@ services:
   - docker:19.03.8-dind
 
 build_image:
+  tags:
+    - docker
   script:
     - docker build -t mcadmin -f image/Dockerfile .
     - docker tag mcadmin localhost:5000/mcadmin
