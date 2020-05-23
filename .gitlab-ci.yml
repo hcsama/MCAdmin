@@ -14,7 +14,7 @@ build_image:
   script:
     - echo $MY_IMAGE
     - echo $MY_REGISTRY
-    - exit -1
     - docker pull $MY_IMAGE || true
+    - exit -1
     - docker build --cache-from $MY_IMAGE -t mcadmin -t $MY_IMAGE -f image/Dockerfile .
     - docker push $MY_IMAGE
