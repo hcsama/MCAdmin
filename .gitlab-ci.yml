@@ -21,7 +21,7 @@ build_image:
 deploy:
   stage: deploy
   tags:
-    - any
+    - docker
   image: cdrx/rancher-gitlab-deploy
   script:
     - upgrade --stack minecraft --service mcadmin --new-image $MY_IMAGE 

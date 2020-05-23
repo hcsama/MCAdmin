@@ -32,7 +32,7 @@ import MinecraftClock from './components/MinecraftClock.vue';
 import ServerStatus from './components/ServerStatus.vue';
 import MOTD from "./components/MOTD.vue";
 import axios from 'axios';
-const mcServer = 'http://localhost:5000/'
+const mcServer = 'http://localhost:5001/'
 
 export default {
   name: 'app',

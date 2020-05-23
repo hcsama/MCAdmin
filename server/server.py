@@ -71,4 +71,4 @@ def players():
     return(jsonify(nplayers=nPlayers, maxplayers=maxPlayers, players=pls))
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', port=5001)
