@@ -17,3 +17,9 @@ build_image:
     - docker pull $MY_IMAGE
     - docker build --cache-from $MY_IMAGE -t mcadmin -t $MY_IMAGE -f image/Dockerfile .
     - docker push $MY_IMAGE
+
+deploy:
+  stage: deploy
+  image: cdrx/rancher-gitlab-deploy
+  script:
+    - upgrade --stack minecraft --service mcadmin --new-image $MY_IMAGE 
