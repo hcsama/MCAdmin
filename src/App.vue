@@ -65,24 +65,27 @@ export default {
     motd() {
       const path = mcServer.concat('motd');
       const param = this.motd;
-      axios.post(path, param).catch(e => {});
+      axios.post(path, param).catch(e => { this.invalidateconnection(); });
     },
   },
   methods: {
+    invalidateconnection() {
+      processserverresult(false);
+    },
     updateTime() {
       const path = mcServer.concat('time');
       axios.get(path).then((res) => {
         const n = res.data.daytime;
         if (n >= 0) { this.minecrafttime = n } else { this.minecrafttime = 6000 }
-      }).catch(e => {});
+      }).catch(e => { this.invalidateconnection(); });
     },
     setserverparms() {
       const path = mcServer.concat('connect?serverip=').concat(this.serverip).concat('&serversecret=').concat(this.serversecret);
-      axios.get(path).then((res) => { this.processserverresult(res); }).catch(e => {});
+      axios.get(path).then((res) => { this.processserverresult(res.data.connected); }).catch(e => { this.invalidateconnection(); });
     },
-    processserverresult(res) {
+    processserverresult(connected) {
       const before = this.validconnectionparms;
-      this.validconnectionparms = res.data.connected;
+      this.validconnectionparms = connected;
       if(before != this.validconnectionparms) {
         if(before) {
           clearInterval(this.clockTimer);
@@ -99,7 +102,7 @@ export default {
       axios.get(path).then((res) =>{
         this.maxPlayers = res.data.maxplayers;
         this.activePlayers = res.data.players;
-      }).catch(e => {});
+      }).catch(e => { this.invalidateconnection(); });
     },
   },
   mounted() {
