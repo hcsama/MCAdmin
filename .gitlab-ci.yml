@@ -8,15 +8,13 @@ services:
   - name: docker:19.03.8-dind
     command: ["--insecure-registry=$MY_REGISTRY"]
 
-before_script:
-  - echo $MY_IMAGE
-  - echo $MY_REGISTRY
-  - false
-
 build_image:
   tags:
     - docker
   script:
+    - echo $MY_IMAGE
+    - echo $MY_REGISTRY
+    - false
     - docker pull $MY_IMAGE || true
     - docker build --cache-from $MY_IMAGE -t mcadmin -t $MY_IMAGE -f image/Dockerfile .
     - docker push $MY_IMAGE
