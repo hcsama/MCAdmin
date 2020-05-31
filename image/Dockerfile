@@ -17,5 +17,4 @@ WORKDIR /app
 COPY image/start.sh ./
 COPY nginx.conf /etc/nginx
 EXPOSE 80
-EXPOSE 5001
 CMD ["/bin/sh", "/app/start.sh"]
