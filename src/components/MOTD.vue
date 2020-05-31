@@ -5,7 +5,7 @@
             Send message to all
         </div>
         <div class="below">
-            <button style="margin:0px 30px;max-width:100px;" type="button" v-on:click="sendmotd" >Send message</button>
+            <button style="outline-color: #808080; outline-width: 3px; outline-style: solid;" type="button" v-on:click="sendmotd" >Send message</button>
         </div>
     </div>
 </template>
@@ -41,7 +41,6 @@
         right: 0;
         top: 100%;
         text-align: center;
-        width: 60%;
     }
     .above {
         position: absolute;
@@ -50,7 +49,6 @@
         left: 0;
         right: 0;
         top: -40%;
-        text-align: left;
-        width: 60%;
+        text-align: center;
     }
 </style>

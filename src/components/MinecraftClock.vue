@@ -1,8 +1,8 @@
 <template>
-    <div class="box">
-        <clock :time="time" :bg="daycolor" size="200px"/>
+    <div class="box" >
+        <clock :time="time" :bg="daycolor" :color="textcolor" size="170px"/>
         <div class="text">
-            <b>It is currently {{daytime}}</b>
+            <b>- {{daytime}} -</b>
         </div>
     </div>
 </template>
@@ -14,7 +14,14 @@
         components: { Clock },
         props: ['timevalue'],
         data() {
-            return {};
+                return {
+                    daycolors: {
+                        midnight: { d: "#303030", t: "#F0F0F0"},
+                        night: { d: "#3030A0", t: "#F0F0F0"},
+                        daytime: { d: "#F8FF00", t: "#101010"},
+                        noon: { d: '#FFFFE0', t: "#101010"},
+                    },
+                }
         },
         computed: {
             hms() {
@@ -38,16 +45,13 @@
                 if(h == 12) {
                     return "noon";
                 }
-                return "day";
+                return "daytime";
             },
             daycolor() {
-                const daycolors = {
-                    "midnight": "#303030",
-                    "night": "#A0A0F0",
-                    "day": "#F8FF00",
-                    "noon": '#FFFFE0',
-                }
-                return daycolors[this.daytime];
+                return this.daycolors[this.daytime].d;
+            },
+            textcolor() {
+                return this.daycolors[this.daytime].t;
             },
         }
     }
@@ -57,15 +61,18 @@
     .box {
         position: relative;
         display: inline-block;
+        color: #101010;
     }
     .box .text {
+        color: #F0F0F0;
+        font-size: 1.5rem;
         position: absolute;
         z-index: 999;
         margin: 0 auto;
         left: 0;
         right: 0;
-        top: -30%;
+        top: -25%;
         text-align: center;
-        width: 60%;
+        width: 80%;
     }
 </style>

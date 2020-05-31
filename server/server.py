@@ -3,6 +3,7 @@ from flask_cors import CORS
 from mcrcon import MCRcon
 import logging
 import threading
+import os
 
 
 # configuration
@@ -18,7 +19,7 @@ app.config.from_object(__name__)
 CORS(app, resources={r'/*': {'origins': '*'}})
 
 log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
+log.setLevel(logging.INFO)
 rconlock = threading.Lock()
 
 def rconRequest(req):
@@ -43,10 +44,24 @@ def setConnectionParms():
     check = rconRequest('time query daytime')
     return(jsonify(serverip=serverip, serversecret=serversecret, connected=(check != '-1')))
 
+@app.route('/api/serverdefault', methods=['GET'])
+def serverdefault():
+    return(jsonify(serverdefault=os.getenv('MCSERVER_ADDR', ''), secretdefault=os.getenv('MCSERVER_SECR', '')))
+
 @app.route('/api/time', methods=['GET'])
 def mctime():
     resp = rconRequest("time query daytime")
     return(jsonify(daytime=int(resp.split(' ')[-1])))
+
+@app.route('/api/days', methods=['GET'])
+def gamedays():
+    resp = rconRequest("time query day")
+    return(jsonify(days=int(resp.split(' ')[-1])))
+
+@app.route('/api/serverup', methods=['GET'])
+def serverup():
+    resp = rconRequest("time query gametime")
+    return(jsonify(ticks=int(resp.split(' ')[-1])))
 
 @app.route('/api/motd', methods=['POST'])
 def motd():
