@@ -31,7 +31,6 @@ Deploy to docker hub:
   stage: deploy
   tags:
     - docker
-  only:
-    - tags
+  when: manual
   script:
     echo this is where we would deploy to docker hub
