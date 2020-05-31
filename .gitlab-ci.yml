@@ -3,6 +3,7 @@ image: docker:19.03.8
 variables:
   DOCKER_DRIVER: overlay2
   MY_IMAGE: $MY_REGISTRY/mcadmin
+  MY_DHIMAGE: hcsama/mcadmin:1.0
 
 services:
   - name: docker:19.03.8-dind
@@ -13,8 +14,6 @@ Build image:
   tags:
     - docker
   script:
-    - echo $MY_IMAGE
-    - echo $MY_REGISTRY
     - docker pull $MY_IMAGE
     - docker build --cache-from $MY_IMAGE -t mcadmin -t $MY_IMAGE -f image/Dockerfile .
     - docker push $MY_IMAGE
@@ -34,4 +33,6 @@ Deploy to docker hub:
   when: manual
   script:
     - docker login -u hcsama -p $DOCKERHUB_SECRET
-    - echo this is where we would deploy to docker hub
+    - docker pull $MY_IMAGE
+    - docker tag $MY_IMAGE $MY_DHIMAGE
+    - docker push $MY_DHIMAGE
