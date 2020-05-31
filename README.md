@@ -31,7 +31,7 @@ After making this change, you will have to restart your server.
 
 ### Simple setup
 
-Simply run the latest version of `hcsama/mcadmin`. You can simply use docker.
+Just run the latest version of `hcsama/mcadmin`. You can simply use docker.
 
     docker run -d -p 8080:80 hcsama/mcadmin
 
@@ -92,6 +92,8 @@ There are many more things that could be improved. RCON has many more commands a
 ## Acknowledgements
 
 MCAdmin is a [vuejs](https://vuejs.org) application with a [python](https://www.python.org) server. The http server and router is [NGINX](https://www.nginx.com).
+
+Yóu can find the source code on [github](https://github.com/hcsama/MCAdmin).
 
 In building this application I used the following excellent components:
 
