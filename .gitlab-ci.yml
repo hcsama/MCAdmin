@@ -33,5 +33,5 @@ Deploy to docker hub:
     - docker
   when: manual
   script:
-    docker login -u hcsama -p $DOCKERHUB_SECRET
-    echo this is where we would deploy to docker hub
+    - docker login -u hcsama -p $DOCKERHUB_SECRET
+    - echo this is where we would deploy to docker hub
