@@ -8,7 +8,8 @@ services:
   - name: docker:19.03.8-dind
     command: ["--insecure-registry=192.168.1.49:5000"]
 
-build_image:
+Build image:
+  stage: build
   tags:
     - docker
   script:
@@ -18,10 +19,19 @@ build_image:
     - docker build --cache-from $MY_IMAGE -t mcadmin -t $MY_IMAGE -f image/Dockerfile .
     - docker push $MY_IMAGE
 
-deploy:
-  stage: deploy
+Deploy to local registry:
+  stage: test
   tags:
     - docker
   image: cdrx/rancher-gitlab-deploy
   script:
-    - upgrade --stack minecraft --service mcadmin --new-image $MY_IMAGE 
+    - upgrade --stack minecraft --service mcadmin --new-image $MY_IMAGE
+
+Deploy to docker hub:
+  stage: deploy
+  tags:
+    - docker
+  only:
+    - tags
+  script:
+    echo this is where we would deploy to docker hub
