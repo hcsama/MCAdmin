@@ -19,12 +19,13 @@ app.config.from_object(__name__)
 CORS(app, resources={r'/*': {'origins': '*'}})
 
 log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
+log.setLevel(logging.WARN)
 rconlock = threading.Lock()
 
 def rconRequest(req):
     global rconlock
 
+    log.debug(req)
     if serverip is None or serversecret is None:
         return('-1')
     with rconlock:
@@ -43,6 +44,23 @@ def setConnectionParms():
     serversecret = request.args.get('serversecret', serversecret)
     check = rconRequest('time query daytime')
     return(jsonify(serverip=serverip, serversecret=serversecret, connected=(check != '-1')))
+
+@app.route('/api/gamerule', methods=['GET'])
+def gamerule():
+    rule = request.args.get('rule', None)
+    value = request.args.get('value', None)
+    if value is None:
+        resp = rconRequest('gamerule ' + rule)
+    else:
+        resp = rconRequest('gamerule ' + rule + ' ' + value)
+    if resp != '-1':
+        words = resp.split(' ')
+        if words[0] == 'Incorrect':
+            log.warn(words)
+            value = 'ERROR'
+        else:
+            value = words[-1]
+    return(jsonify(rule=rule, value=value, connected=(resp != '-1')))
 
 @app.route('/api/serverdefault', methods=['GET'])
 def serverdefault():

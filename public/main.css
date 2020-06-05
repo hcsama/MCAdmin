@@ -11,7 +11,7 @@
 }
 
 #app header {
-  max-width: 400px;
+  max-width: 100%;
   margin: 1rem 0;
 }
 header h4 {
@@ -21,7 +21,7 @@ header h4 {
 }
 
 .dashboard {
-  max-width: 1000px;
+  width: 100%;
 }
 .dashboard__row {
   display: flex;

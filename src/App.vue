@@ -12,19 +12,22 @@
         </h3>
       </div>
       <div class="dashboard__row">
+        <span>
+          <minecraft-clock :timevalue="minecrafttime"/>
+        </span>
         <digital :value="gamedays" caption="In-Game Days" />
         <digital :value="serveruptime" caption="Server Uptime" />
       </div>
       <div class="dashboard__row">
-        <span>
-          <minecraft-clock :timevalue="minecrafttime"/>
-        </span>
+        <users-list :entries="activePlayers" :maxPlayers="maxPlayers" :actPlayers="activePlayers.length"/>
         <span>
           <m-o-t-d v-bind:motd.sync="motd"/>
         </span>
       </div>
-      <div class="dashboard__row">
-        <users-list :entries="activePlayers" :maxPlayers="maxPlayers" :actPlayers="activePlayers.length"/>
+      <div v-for="row in Math.trunc(vforrules.length/3)+1" class="dashboard__row" style="margin:10px">
+        <template v-for="i in 3">
+          <game-rule v-if="i-1+(row-1)*3 < vforrules.length" :rule=vforrules[i-1+(row-1)*3].rule :ruledesc=vforrules[i-1+(row-1)*3].desc :rulelist="rules" v-on:set-rule-val="setruleval($event)"/>
+        </template>
       </div>
     </section>
   </div>
@@ -35,7 +38,8 @@ import UsersList from './components/UsersList.vue';
 import MinecraftClock from './components/MinecraftClock.vue';
 import ServerStatus from './components/ServerStatus.vue';
 import MOTD from "./components/MOTD.vue";
-import Digital from "./components/Digital.vue"
+import Digital from "./components/Digital.vue";
+import GameRule from "./components/GameRule.vue";
 import axios from 'axios';
 import _ from 'lodash';
 
@@ -47,6 +51,7 @@ export default {
     ServerStatus,
     MOTD,
     Digital,
+    GameRule,
   },
   data() {
     return {
@@ -60,9 +65,30 @@ export default {
       gamedays: '-',
       serverup: 0,
       mcServer: process.env.VUE_APP_BE_URL || "/api/",
+      rules: {
+        keepInventory: {value: '', desc: 'Keep inventory & experience after death'},
+        doLimitedCrafting: {value: '', desc: 'Players can only craft recipies they have learned'},
+        doDaylightCycle: {value: '', desc: 'Day and night happening'},
+        doWeatherCycle: {value: '', desc: 'Weather can change'},
+        drowningDamage: {value: '', desc: 'Players can drown'},
+        fallDamage: {value: '', desc: 'Players can die from a fall'},
+        fireDamage: {value: '', desc: 'Fire will burn players'},
+        naturalRegeneration: {value: '', desc: 'Players regenerate health with normal food'},
+      },
     };
   },
   computed: {
+    vforrules() {
+      var vfor = [];
+      for(const r in this.rules) {
+        const v = { rule: r, desc: this.rules[r].desc };
+        vfor.push(v);
+      }
+      return vfor;
+    },
+    rulev(r) {
+      return '';
+    },
     serveruptime() {
       if(this.serverup == 0) {
         return '-';
@@ -108,7 +134,7 @@ export default {
       }).catch(e => { this.invalidateconnection(); });
     },
     setserverparms() {
-      const path = this.mcServer.concat('connect?serverip=').concat(this.serverip).concat('&serversecret=').concat(this.serversecret);
+      const path = this.mcServer + 'connect?serverip=' + this.serverip + '&serversecret=' + this.serversecret;
       axios.get(path).then((res) => { this.processserverresult(res.data.connected); }).catch(e => { this.invalidateconnection(); });
     },
     processserverresult(connected) {
@@ -123,9 +149,13 @@ export default {
         if(this.validconnectionparms) {
           this.clockTimer = setInterval(this.updateTime, 1000);
           this.slowTimer = setInterval(this.slowAction, 10000);
-          this.slowAction();
+          this.uponServerConnect();
         }
       }
+    },
+    uponServerConnect() {
+      this.slowAction();
+      this.updateGameRules();
     },
     slowAction() {
       this.updatePlayerlist();
@@ -154,7 +184,31 @@ export default {
     setserverdefault() {
       const path = this.mcServer.concat('serverdefault');
       axios.get(path).then((res) => { this.serverip = res.data.serverdefault; this.serversecret = res.data.secretdefault; }).catch(e => { this.invalidateconnection(); });
-    }
+    },
+    updateruleval(rule, value) {
+      if(value == 'true') {
+          this.rules[rule].value = 'on';
+        }
+      else if(value == 'false') {
+          this.rules[rule].value = '';
+        }
+      else if(value == 'ERROR') {
+        console.log('rule ' + rule + ' ' + value);
+      }
+    },
+    getruleval(event) {
+      const path = this.mcServer + 'gamerule?rule=' + event.rule;
+      axios.get(path).then((res) => { this.updateruleval(event.rule, res.data.value); }).catch(e => { this.invalidateconnection() });
+    },
+    setruleval(event) {
+      const path = this.mcServer + 'gamerule?rule=' + event.rule + '&value=' + event.value;
+      axios.get(path).then((res) => { this.updateruleval(event.rule, res.data.value) }).catch(e => { this.invalidateconnection() });
+    },
+    updateGameRules() {
+      for(const rule in this.rules) {
+        this.getruleval({rule: rule});
+      }
+    },
   },
   created() {
     this.debounced_setserverparms = _.debounce(this.setserverparms, 2000);

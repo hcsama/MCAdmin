@@ -29,12 +29,13 @@
     .statusgreen {
         border-radius: 25px;
         background: #73AD21;
-        padding: 5px 10px; 
+        padding: 5px 10px;
+        box-shadow: 0 0 15px rgb(173, 33, 33);
     }
     .statusred {
         border-radius: 25px;
         background: rgb(173, 33, 33);
-        color: #a2d1ff;
         padding: 5px 10px; 
+        box-shadow: 0 0 15px #73AD21;
     }
 </style>

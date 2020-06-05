@@ -27,7 +27,6 @@ p {
 }
 #clock {
     width: 30%;
-//    background-color: #101010;
     font-family: 'Share Tech Mono', monospace;
     text-align: center;
     color: #d7dfe2;
