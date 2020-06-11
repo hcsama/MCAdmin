@@ -19,10 +19,19 @@
         <digital :value="serveruptime" caption="Server Uptime" />
       </div>
       <div class="dashboard__row">
-        <users-list :entries="activePlayers" :maxPlayers="maxPlayers" :actPlayers="activePlayers.length"/>
+        <users-list listCaption="Active Players" :entries="activePlayers" :maxPlayers="maxPlayers" :actPlayers="activePlayers.length"/>
+        <users-list listCaption="Whitelisted Players" :entries="whitelistPlayers" :actPlayers="whitelistPlayers.length"/>
+      </div>
+      <div class="dashboard__row">
+        <img-button cmd="day" image="day.png" labeltext="Set day" v-on:img-button-event="setdaytime($event)" />
+        <img-button cmd="night" image="night.png" labeltext="Set night" v-on:img-button-event="setdaytime($event)" />
+        <img-button cmd="clear" image="day.png" labeltext="Clear weather" v-on:img-button-event="setweather($event)" />
+        <img-button cmd="rain" image="snow.png" labeltext="Make rain/snow" v-on:img-button-event="setweather($event)" />
+        <img-button cmd="thunder" image="snow.png" labeltext="Make thunderstorm" v-on:img-button-event="setweather($event)" />
         <span>
           <m-o-t-d v-bind:motd.sync="motd"/>
         </span>
+
       </div>
       <div v-for="row in Math.trunc(vforrules.length/3)+1" class="dashboard__row" style="margin:10px">
         <template v-for="i in 3">
@@ -40,6 +49,8 @@ import ServerStatus from './components/ServerStatus.vue';
 import MOTD from "./components/MOTD.vue";
 import Digital from "./components/Digital.vue";
 import GameRule from "./components/GameRule.vue";
+import ImgButton from "./components/ImgButton.vue";
+
 import axios from 'axios';
 import _ from 'lodash';
 
@@ -52,10 +63,12 @@ export default {
     MOTD,
     Digital,
     GameRule,
+    ImgButton,
   },
   data() {
     return {
       activePlayers: [],
+      whitelistPlayers: [],
       maxPlayers: 0,
       minecrafttime: 6000,
       serverip: '',
@@ -159,6 +172,7 @@ export default {
     },
     slowAction() {
       this.updatePlayerlist();
+      this.updateWhitelist();
       this.updateGameDays();
       this.updateServerUp();
     },
@@ -167,6 +181,12 @@ export default {
       axios.get(path).then((res) =>{
         this.maxPlayers = res.data.maxplayers;
         this.activePlayers = res.data.players;
+      }).catch(e => { this.invalidateconnection(); });
+    },
+    updateWhitelist() {
+      const path = this.mcServer.concat('whitelist');
+      axios.get(path).then((res) =>{
+        this.whitelistPlayers = res.data.players;
       }).catch(e => { this.invalidateconnection(); });
     },
     updateGameDays() {
@@ -208,6 +228,16 @@ export default {
       for(const rule in this.rules) {
         this.getruleval({rule: rule});
       }
+    },
+    setdaytime(event) {
+      const path = this.mcServer.concat('daytime');
+      const param = {cmd: event.cmd};
+      axios.post(path, param).catch(e => { this.invalidateconnection(); });
+    },
+    setweather(event) {
+      const path = this.mcServer.concat('weather');
+      const param = {cmd: event.cmd};
+      axios.post(path, param).catch(e => { this.invalidateconnection(); });
     },
   },
   created() {

@@ -71,6 +71,16 @@ def mctime():
     resp = rconRequest("time query daytime")
     return(jsonify(daytime=int(resp.split(' ')[-1])))
 
+@app.route('/api/daytime', methods=['POST'])
+def mcdaytime():
+    resp = rconRequest("time set " + request.json['cmd'])
+    return '{}'
+
+@app.route('/api/weather', methods=['POST'])
+def mcweather():
+    resp = rconRequest("time set " + request.json['cmd'])
+    return '{}'
+
 @app.route('/api/days', methods=['GET'])
 def gamedays():
     resp = rconRequest("time query day")
@@ -102,6 +112,20 @@ def players():
         nPlayers = 0
         maxPlayers = 0
     return(jsonify(nplayers=nPlayers, maxplayers=maxPlayers, players=pls))
+
+@app.route('/api/whitelist', methods=['GET'])
+def whitelist():
+    resp = rconRequest("whitelist list")
+    pls = []
+    if resp != '-1':
+        words = resp.replace(',', '').split(' ')
+        nPlayers = int(words[2])
+        for i in range(nPlayers):
+            pl = { "name": words[i+5] }
+            pls.append(pl)
+    else:
+        nPlayers = 0
+    return(jsonify(nplayers=nPlayers, players=pls))
 
 if __name__ == '__main__':
     app.run()
