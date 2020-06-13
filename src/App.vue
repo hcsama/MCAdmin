@@ -266,7 +266,11 @@ export default {
           }).catch(e => { this.invalidateconnection(); });
     },
     delwhitelist(event) {
-      // TODO only single player removal
+      if(event.length != 1)
+      {
+        this.returnMessage = 'May only remove exactly one player each time';
+        return;
+      }
       var players = [];
       for (var p in event)
       {
