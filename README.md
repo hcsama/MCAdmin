@@ -1,4 +1,4 @@
-# MCAdmin - A simple (very simple) Web GUI for monitoring your Minecraft server
+# MCAdmin - A simple Web GUI for monitoring and managing your Minecraft server
 
 This release offers basic functionality:
 - Connect to any configured Minecraft server
@@ -8,6 +8,10 @@ This release offers basic functionality:
 - Send message to all players
 - Show simple list of players on server
 - Set some of the gamerules
+- Manage whitelist (only legitimate players)
+
+**MCAdmin has been tested with a plain vanilla server. Some features will not work with Bedrock servers.**
+
 ---
 ## Step 1: Prepare your Minecraft server
 MCAdmin uses the [RCON](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol) feature of the server. You don't really need to worry about understanding the protocol or the commands.  

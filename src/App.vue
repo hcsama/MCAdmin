@@ -20,7 +20,12 @@
       </div>
       <div class="dashboard__row">
         <users-list listCaption="Active Players" :entries="activePlayers" :maxPlayers="maxPlayers" :actPlayers="activePlayers.length"/>
-        <users-list listCaption="Whitelisted Players" :entries="whitelistPlayers" :actPlayers="whitelistPlayers.length"/>
+        <users-list listCaption="Whitelisted Players" :entries="whitelistPlayers" :actPlayers="whitelistPlayers.length" :changeable="true" v-on:add-to-list="addwhitelist($event)" v-on:del-from-list="delwhitelist($event)"/>
+      </div>
+      <div class="dashboard__row">
+        <span style="color: red;">
+          {{ returnMessage }}
+        </span>
       </div>
       <div class="dashboard__row">
         <img-button cmd="day" image="day.png" labeltext="Set day" v-on:img-button-event="setdaytime($event)" />
@@ -31,7 +36,6 @@
         <span>
           <m-o-t-d v-bind:motd.sync="motd"/>
         </span>
-
       </div>
       <div v-for="row in Math.trunc(vforrules.length/3)+1" class="dashboard__row" style="margin:10px">
         <template v-for="i in 3">
@@ -76,6 +80,7 @@ export default {
       validconnectionparms: false,
       motd: '',
       gamedays: '-',
+      returnMessage: '',
       serverup: 0,
       mcServer: process.env.VUE_APP_BE_URL || "/api/",
       rules: {
@@ -132,7 +137,12 @@ export default {
     motd() {
       const path = this.mcServer.concat('motd');
       const param = this.motd;
-      axios.post(path, param).catch(e => { this.invalidateconnection(); });
+      axios.post(path, param).then((res) => { this.returnMessage = 'Sent message to all: ' + param }).catch(e => { this.invalidateconnection(); });
+    },
+    returnMessage() {
+      if(this.returnMessage != ''){
+        this.debounced_clearmsg();
+      }
     },
   },
   methods: {
@@ -232,21 +242,52 @@ export default {
     setdaytime(event) {
       const path = this.mcServer.concat('daytime');
       const param = {cmd: event.cmd};
-      axios.post(path, param).catch(e => { this.invalidateconnection(); });
+      axios.post(path, param).then((res) => { this.returnMessage = res.data.msg }).catch(e => { this.invalidateconnection(); });
     },
     setweather(event) {
       const path = this.mcServer.concat('weather');
       const param = {cmd: event.cmd};
-      axios.post(path, param).catch(e => { this.invalidateconnection(); });
+      axios.post(path, param).then((res) => { this.returnMessage = res.data.msg }).catch(e => { this.invalidateconnection(); });
+    },
+    clearmsg() {
+      this.returnMessage = '';
+    },
+    addwhitelist(event) {
+      const path = this.mcServer.concat('addwhitelist');
+      const param = {name: event.player};
+      axios.post(path, param).then(res => {
+          if(res.status != 200) {
+            this.returnMessage = param.name + ' is not a known player name';
+          }
+          else {
+            this.updateWhitelist();
+            this.returnMessage = res.data.msg;
+          }
+          }).catch(e => { this.invalidateconnection(); });
+    },
+    delwhitelist(event) {
+      // TODO only single player removal
+      var players = [];
+      for (var p in event)
+      {
+        players.push(event[p].name);
+      }
+      const path = this.mcServer.concat('delwhitelist');
+      const param = {names: players};
+      axios.post(path, param).then(res => { this.returnMessage = res.data.msg; this.updateWhitelist(); }).catch(e => { this.invalidateconnection(); });
     },
   },
+
   created() {
     this.debounced_setserverparms = _.debounce(this.setserverparms, 2000);
+    this.debounced_clearmsg = _.debounce(this.clearmsg, 3000);
   },
+
   mounted() {
     this.setserverdefault();
     this.slowAction();
   },
+
   beforeDestroy() {
     clearInterval(this.clockTimer);
     clearInterval(this.slowTimer);

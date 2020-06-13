@@ -4,6 +4,7 @@ from mcrcon import MCRcon
 import logging
 import threading
 import os
+import requests
 
 
 # configuration
@@ -19,7 +20,7 @@ app.config.from_object(__name__)
 CORS(app, resources={r'/*': {'origins': '*'}})
 
 log = logging.getLogger('werkzeug')
-log.setLevel(logging.WARN)
+log.setLevel(logging.DEBUG)
 rconlock = threading.Lock()
 
 def rconRequest(req):
@@ -74,12 +75,12 @@ def mctime():
 @app.route('/api/daytime', methods=['POST'])
 def mcdaytime():
     resp = rconRequest("time set " + request.json['cmd'])
-    return '{}'
+    return (jsonify(msg=resp))
 
 @app.route('/api/weather', methods=['POST'])
 def mcweather():
-    resp = rconRequest("time set " + request.json['cmd'])
-    return '{}'
+    resp = rconRequest("weather " + request.json['cmd'])
+    return (jsonify(msg=resp))
 
 @app.route('/api/days', methods=['GET'])
 def gamedays():
@@ -126,6 +127,20 @@ def whitelist():
     else:
         nPlayers = 0
     return(jsonify(nplayers=nPlayers, players=pls))
+
+@app.route('/api/addwhitelist', methods=['POST'])
+def addwhilelist():
+    resp = requests.get('https://api.mojang.com/users/profiles/minecraft/' + request.json['name'])
+    if resp.status_code != 200:
+        return ('', 204)
+    resp = rconRequest("whitelist add " + request.json['name'])
+    return (jsonify(msg=resp))
+
+@app.route('/api/delwhitelist', methods=['POST'])
+def delwhilelist():
+    resp = rconRequest("whitelist remove " + ' '.join(request.json['names']))
+    return (jsonify(msg=resp))
+
 
 if __name__ == '__main__':
     app.run()
