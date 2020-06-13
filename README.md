@@ -1,13 +1,14 @@
 # MCAdmin - A simple Web GUI for monitoring and managing your Minecraft server
 
 This release offers basic functionality:
-- Connect to any configured Minecraft server
+- Connect to any Minecraft server configured for RCON
 - Show number of in-game days
 - Show server uptime
 - Show in-game time of day
 - Send message to all players
 - Show simple list of players on server
 - Set some of the gamerules
+- Set day/night and weather
 - Manage whitelist (only legitimate players)
 
 **MCAdmin has been tested with a plain vanilla server. Some features will not work with Bedrock servers.**
