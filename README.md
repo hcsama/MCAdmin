@@ -10,6 +10,7 @@ This release offers basic functionality:
 - Set some of the gamerules
 - Set day/night and weather
 - Manage whitelist (only legitimate players)
+- Turn whitelist on and off
 
 **MCAdmin has been tested with a plain vanilla server. Some features will not work with Bedrock servers.**
 
@@ -52,7 +53,7 @@ By linking your Minecraft container with your MCAdmin container you avoid having
 You'll need to replace `<name or id>` with the container id or name of your Minecraft server container.
 
 ### Environment variables
-
+#### Server settings
 MCAdmin requires your Minecraft server's address (ip or hostname) and RCON password. You can simply enter this information on the MCAdmin page or you can predefine values through environment variables during container start.
 
     MCSERVER_ADDR - The IP address or hostname of your Server
@@ -69,6 +70,10 @@ That's the most simple way again. Assuming your Minecraft server is visible on y
 If you are using container linking above, your run command looks like:
 
     docker run -d -p 8080:80 --env MCSERVER_ADDR=minecraft hcsama/mcadmin
+#### Debugging
+    MCSEERVER_DEBG - Debug mode for backend
+Setting this to a non-empty string turns on debug logging on backend.
+
 ---
 ## Step 3: Use MCAdmin
 

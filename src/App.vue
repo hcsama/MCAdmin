@@ -84,14 +84,15 @@ export default {
       serverup: 0,
       mcServer: process.env.VUE_APP_BE_URL || "/api/",
       rules: {
-        keepInventory: {value: '', desc: 'Keep inventory & experience after death'},
-        doLimitedCrafting: {value: '', desc: 'Players can only craft recipies they have learned'},
-        doDaylightCycle: {value: '', desc: 'Day and night happening'},
-        doWeatherCycle: {value: '', desc: 'Weather can change'},
-        drowningDamage: {value: '', desc: 'Players can drown'},
-        fallDamage: {value: '', desc: 'Players can die from a fall'},
-        fireDamage: {value: '', desc: 'Fire will burn players'},
-        naturalRegeneration: {value: '', desc: 'Players regenerate health with normal food'},
+        keepInventory: {value: '', desc: 'Keep inventory & experience after death', type: 'gamerule'},
+        doLimitedCrafting: {value: '', desc: 'Players can only craft recipies they have learned', type: 'gamerule'},
+        enforceWhitelist: {value: '', desc: 'Only whitelisted players allowed', type: 'whitelist'},
+        doDaylightCycle: {value: '', desc: 'Day and night happening', type: 'gamerule'},
+        doWeatherCycle: {value: '', desc: 'Weather can change', type: 'gamerule'},
+        drowningDamage: {value: '', desc: 'Players can drown', type: 'gamerule'},
+        fallDamage: {value: '', desc: 'Players can die from a fall', type: 'gamerule'},
+        fireDamage: {value: '', desc: 'Fire will burn players', type: 'gamerule'},
+        naturalRegeneration: {value: '', desc: 'Players regenerate health with normal food', type: 'gamerule'},
       },
     };
   },
@@ -227,12 +228,32 @@ export default {
       }
     },
     getruleval(event) {
-      const path = this.mcServer + 'gamerule?rule=' + event.rule;
-      axios.get(path).then((res) => { this.updateruleval(event.rule, res.data.value); }).catch(e => { this.invalidateconnection() });
+      switch (this.rules[event.rule].type) {
+        case 'gamerule':
+          var path = this.mcServer + 'gamerule?rule=' + event.rule;
+          axios.get(path).then((res) => { this.updateruleval(event.rule, res.data.value); }).catch(e => { this.invalidateconnection() });
+          break;      
+        case 'whitelist':
+          var path = this.mcServer + 'whitelistonoff';
+          axios.get(path).then((res) => { this.updateruleval(event.rule, res.data.value); }).catch(e => { this.invalidateconnection() });
+          break;      
+        default:
+          break;
+      }
     },
     setruleval(event) {
-      const path = this.mcServer + 'gamerule?rule=' + event.rule + '&value=' + event.value;
-      axios.get(path).then((res) => { this.updateruleval(event.rule, res.data.value) }).catch(e => { this.invalidateconnection() });
+      switch (this.rules[event.rule].type) {
+        case 'gamerule':
+          var path = this.mcServer + 'gamerule?rule=' + event.rule + '&value=' + event.value;
+          axios.get(path).then((res) => { this.updateruleval(event.rule, res.data.value) }).catch(e => { this.invalidateconnection() });
+          break;
+        case 'whitelist':
+          var path = this.mcServer + 'whitelistonoff?value=' + event.value;
+          axios.get(path).then((res) => { this.updateruleval(event.rule, res.data.value); }).catch(e => { this.invalidateconnection() });
+          break;      
+        default:
+          break;
+      }
     },
     updateGameRules() {
       for(const rule in this.rules) {

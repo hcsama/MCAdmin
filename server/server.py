@@ -20,7 +20,7 @@ app.config.from_object(__name__)
 CORS(app, resources={r'/*': {'origins': '*'}})
 
 log = logging.getLogger('werkzeug')
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.WARN if os.getenv('MCSERVER_DEBG', '') == '' else logging.DEBUG)
 rconlock = threading.Lock()
 
 def rconRequest(req):
@@ -127,6 +127,21 @@ def whitelist():
     else:
         nPlayers = 0
     return(jsonify(nplayers=nPlayers, players=pls))
+
+@app.route('/api/whitelistonoff', methods=['GET'])
+def whitelistonoff():
+    value = request.args.get('value', None)
+    if value is None:
+# In this case we just return status, using a little trick
+        resp = rconRequest('whitelist off')
+        if resp != '-1': 
+            on_before = resp.split(' ')[2] != 'already'
+            if on_before:
+                resp = rconRequest('whitelist on')
+            value = 'true' if on_before else 'false'
+    else:
+        resp = rconRequest('whitelist ' + ('on' if value == 'true' else 'off'))
+    return(jsonify(msg=resp, value=value))
 
 @app.route('/api/addwhitelist', methods=['POST'])
 def addwhilelist():
