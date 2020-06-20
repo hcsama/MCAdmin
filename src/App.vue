@@ -4,6 +4,8 @@
       <header>
         <h1>Monitoring your Minecraft Server</h1>
       </header>
+
+<!-- Always -->
       <div class="dashboard_inputrow">
         <h3>
           Server <input style="margin-right:30px" v-model="serverip" placeholder="server address">
@@ -18,30 +20,44 @@
         <digital :value="gamedays" caption="In-Game Days" />
         <digital :value="serveruptime" caption="Server Uptime" />
       </div>
-      <div class="dashboard__row">
-        <users-list listCaption="Active Players" :entries="activePlayers" :maxPlayers="maxPlayers" :actPlayers="activePlayers.length"/>
-        <users-list listCaption="Whitelisted Players" :entries="whitelistPlayers" :actPlayers="whitelistPlayers.length" :changeable="true" v-on:add-to-list="addwhitelist($event)" v-on:del-from-list="delwhitelist($event)"/>
-      </div>
+
+<!-- Always status message line -->
       <div class="dashboard__row">
         <span style="color: red;">
           {{ returnMessage }}
         </span>
       </div>
-      <div class="dashboard__row">
+
+<!-- Tabs -->
+      <div class="dashboard_inputrow">
+        <tab :tabs="tabs" :currentTab="currentTab" v-on:change-tab="changetab($event)"/>
+      </div>
+
+<!-- Tab 'players' -->
+      <div v-show="currentTab == 'players'" class="dashboard__row">
+        <users-list listCaption="Active Players" :entries="activePlayers" :maxPlayers="maxPlayers" :actPlayers="activePlayers.length"/>
+        <users-list listCaption="Whitelisted Players" :entries="whitelistPlayers" :actPlayers="whitelistPlayers.length" :changeable="true" v-on:add-to-list="addwhitelist($event)" v-on:del-from-list="delwhitelist($event)"/>
+        <span>
+          <m-o-t-d v-bind:motd.sync="motd"/>
+        </span>
+      </div>
+
+<!-- Tab 'environment' -->
+      <div v-show="currentTab == 'environment'" class="dashboard__row">
         <img-button cmd="day" image="day.png" labeltext="Set day" v-on:img-button-event="setdaytime($event)" />
         <img-button cmd="night" image="night.png" labeltext="Set night" v-on:img-button-event="setdaytime($event)" />
         <img-button cmd="clear" image="day.png" labeltext="Clear weather" v-on:img-button-event="setweather($event)" />
         <img-button cmd="rain" image="snow.png" labeltext="Make rain/snow" v-on:img-button-event="setweather($event)" />
         <img-button cmd="thunder" image="snow.png" labeltext="Make thunderstorm" v-on:img-button-event="setweather($event)" />
-        <span>
-          <m-o-t-d v-bind:motd.sync="motd"/>
-        </span>
       </div>
-      <div v-for="row in Math.trunc(vforrules.length/3)+1" class="dashboard__row" style="margin:10px">
+
+<!-- Tab 'options' -->
+      <div v-show="currentTab == 'options'" v-for="row in Math.trunc(vforrules.length/3)+1" class="dashboard__row" style="margin:10px">
         <template v-for="i in 3">
           <game-rule v-if="i-1+(row-1)*3 < vforrules.length" :rule=vforrules[i-1+(row-1)*3].rule :ruledesc=vforrules[i-1+(row-1)*3].desc :rulelist="rules" v-on:set-rule-val="setruleval($event)"/>
         </template>
       </div>
+
     </section>
   </div>
 </template>
@@ -54,6 +70,7 @@ import MOTD from "./components/MOTD.vue";
 import Digital from "./components/Digital.vue";
 import GameRule from "./components/GameRule.vue";
 import ImgButton from "./components/ImgButton.vue";
+import Tab from "./components/Tab.vue";
 
 import axios from 'axios';
 import _ from 'lodash';
@@ -68,6 +85,7 @@ export default {
     Digital,
     GameRule,
     ImgButton,
+    Tab,
   },
   data() {
     return {
@@ -83,6 +101,7 @@ export default {
       returnMessage: '',
       serverup: 0,
       mcServer: process.env.VUE_APP_BE_URL || "/api/",
+      currentTab: 'players',
       rules: {
         keepInventory: {value: '', desc: 'Keep inventory & experience after death', type: 'gamerule'},
         doLimitedCrafting: {value: '', desc: 'Players can only craft recipies they have learned', type: 'gamerule'},
@@ -94,6 +113,11 @@ export default {
         fireDamage: {value: '', desc: 'Fire will burn players', type: 'gamerule'},
         naturalRegeneration: {value: '', desc: 'Players regenerate health with normal food', type: 'gamerule'},
       },
+      tabs: [
+        {tab: 'players', label: "Players"},
+        {tab: 'environment', label: "Environment"},
+        {tab: 'options', label: "Game Rules"},        
+      ],
     };
   },
   computed: {
@@ -300,6 +324,9 @@ export default {
       const path = this.mcServer.concat('delwhitelist');
       const param = {names: players};
       axios.post(path, param).then(res => { this.returnMessage = res.data.msg; this.updateWhitelist(); }).catch(e => { this.invalidateconnection(); });
+    },
+    changetab(event) {
+      this.currentTab = event.value;
     },
   },
 
