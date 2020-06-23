@@ -13,6 +13,7 @@ This release offers basic functionality:
 - Turn whitelist on and off
 
 **MCAdmin has been tested with a plain vanilla server. Some features will not work with Bedrock servers.**
+**The currently supported minecraft version is 1.15.2. Support for 1.16 will be added in a few days.**
 
 ---
 ## Step 1: Prepare your Minecraft server
