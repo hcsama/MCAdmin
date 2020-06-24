@@ -104,11 +104,17 @@ def players():
     pls = []
     if resp != '-1':
         words = resp.split(' ')
-        nPlayers = int(words[2])
-        maxPlayers = int(words[6])
-        for i in range(nPlayers):
-            pl = { "name": words[9+i*2], "uuid": words[10+i*2].split(',')[0]}
-            pls.append(pl)
+        counts = list(filter(lambda w : len(w) > 0 and w[0] >='0' and w[0] <= '9', words))
+        nPlayers = int(counts[0])
+        maxPlayers = int(counts[1])
+        if nPlayers > 0:
+            offset = 0
+            for index, item in enumerate(words):
+                if item[-1] == ':':
+                    offset = index+1
+            for i in range(nPlayers):
+                pl = { "name": words[offset+i*2], "uuid": words[offset+1+i*2].split(',')[0]}
+                pls.append(pl)
     else:
         nPlayers = 0
         maxPlayers = 0
@@ -118,14 +124,14 @@ def players():
 def whitelist():
     resp = rconRequest("whitelist list")
     pls = []
+    nPlayers = 0
     if resp != '-1':
         words = resp.replace(',', '').split(' ')
-        nPlayers = int(words[2])
-        for i in range(nPlayers):
-            pl = { "name": words[i+5] }
-            pls.append(pl)
-    else:
-        nPlayers = 0
+        if words[2] != 'no':
+            nPlayers = int(words[2])
+            for i in range(nPlayers):
+                pl = { "name": words[i+5] }
+                pls.append(pl)
     return(jsonify(nplayers=nPlayers, players=pls))
 
 @app.route('/api/whitelistonoff', methods=['GET'])
