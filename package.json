@@ -17,8 +17,8 @@
     "zinggrid": "^1.1.1"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~4.3.0",
-    "@vue/cli-service": "~4.3.0",
+    "@vue/cli-plugin-babel": "~5.0.9",
+    "@vue/cli-service": "~5.0.9",
     "sass": "^1.26.8",
     "sass-loader": "^8.0.2",
     "vue-template-compiler": "^2.6.11"
