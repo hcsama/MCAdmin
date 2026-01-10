@@ -1,0 +1,49 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "API Server",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--reload"
+      ],
+      "cwd": "${workspaceFolder}/api",
+      "jinja": true,
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "name": "MC Admin UI",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "cwd": "${workspaceFolder}/frontend",
+      "console": "integratedTerminal",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "env": {
+        "API_URL": "http://localhost:8000"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug All",
+      "configurations": [
+        "API Server",
+        "MC Admin UI"
+      ]
+    }
+  ]
+}

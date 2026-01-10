@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+aio-mc-rcon
+mcstatus
+pydantic-settings
+python-multipart
+httpx

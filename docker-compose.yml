@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  mcadmin-api:
+    build: ./api
+    environment:
+      - MC_HOST=${MC_HOST:-localhost}
+      - MC_PORT=${MC_PORT:-25575}
+      - MC_RCON_PASSWORD=${MC_RCON_PASSWORD:-minecraft}
+    restart: unless-stopped
+
+  mcadmin-frontend:
+    build: ./frontend
+    ports:
+      - "8080:3000"
+    environment:
+      - API_URL=http://mcadmin-api:8000
+    depends_on:
+      - mcadmin-api
+    restart: unless-stopped

@@ -1,0 +1,11 @@
+{
+	"/": [
+		"src/routes/+page.server.ts"
+	],
+	"/api/status-stream": [
+		"src/routes/api/status-stream/+server.ts"
+	],
+	"/api/[...path]": [
+		"src/routes/api/[...path]/+server.ts"
+	]
+}
